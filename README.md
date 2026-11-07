@@ -1,14 +1,15 @@
 # solution-editorial
 
-写算法题题解的技能（DSH / Claude Skill 格式）。产出固定三段：**数学化题意 → 思路与正确性 → C++/C/Python 三段零注释代码**。
+写算法题题解的技能（DSH / Claude Skill 格式）。产出固定三段：**数学化题意 → 思路与正确性 → C++/C/Python 三份代码**（语言顺序固定，代码不带注释）。
 
 ## 特点
 
 - **不复述题目**：题意压到 3 行以内，只用符号和约束。
-- **代码零注释**：`//`、`/* */`、`#` 一个不写。
+- **代码不带注释**：`//`、`/* */`、`#` 一个不写（但这是写作约束，不会写进题解正文当卖点）。
 - **语言顺序固定**：C++ → C → Python。
 - **左程云风格**：短变量名、全局静态数组、手写队列/堆、`while` 双指针、三元压行、固定 IO 模板。
 - **可执行自检**：`lint_editorial.py` 查结构，`verify_triple.py` 真编译三份代码并比对输出。
+- **直出 Word/PDF**：`md2docx.js` 把多题合成一份 docx（公式转 Word 原生公式），`docx2pdf.ps1` 导出 pdf，`check_docx.py` 验收。
 
 ## 目录
 
@@ -20,10 +21,14 @@ references/
   style-rules.md               风格规则与源码证据
   style-cpp.md / style-c.md / style-python.md
   pitfalls.md                  9 条常见退化
+  export-docx.md               md→docx→pdf 流水线与两个依赖坑
 assets/skeleton.md             可直接复制的骨架
 examples/example-sliding-window-max.md
 scripts/lint_editorial.py
 scripts/verify_triple.py
+scripts/md2docx.js
+scripts/docx2pdf.ps1
+scripts/check_docx.py
 ```
 
 ## 用法
@@ -35,9 +40,24 @@ cmd /c mklink /J "$env:USERPROFILE\.dsh\skills\solution-editorial" "$env:USERPRO
 # 2. 写完题解后自检
 python scripts/lint_editorial.py 题解.md --strict
 python scripts/verify_triple.py 题解.md --input in.txt
+
+# 3. 要 Word：多题合成一份 docx，再导出 pdf
+node scripts/md2docx.js out.docx _src\题解-A.md _src\题解-B.md --title "程序设计竞赛题解手册"
+powershell -ExecutionPolicy Bypass -File scripts/docx2pdf.ps1 -Docx out.docx
+python scripts/check_docx.py out.docx --pdf out.pdf
 ```
 
-两条脚本都返回非零退出码表示不通过，可直接接入自动检查。
+所有脚本返回非零退出码表示不通过，可直接接入自动检查。
+
+## 已知边界（实测踩过的坑）
+
+- `\begin{cases}` 转出来是没有花括号的矩阵，分段函数改用两条带条件的等式。
+- `\quad`、`\hspace` 的间距会被丢弃，需要空隙写 `\ \ `。
+- `\text{"  "}` 里的连续空格会被吞，要表达"两个空格"直接写汉字。
+- temml 必须显式加载 `dist/temml.cjs`，否则在 Node 里是空对象，公式会静默退化成 LaTeX 原文。
+- `docx` 必须与 `mathml-to-docx` 用同一个构建入口，否则输出 `<rootKey>` 垃圾。
+
+详见 `references/export-docx.md`。
 
 ## 风格来源
 

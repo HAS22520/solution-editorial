@@ -1,6 +1,6 @@
 ---
 name: solution-editorial
-description: "写算法题的中文题解（editorial）。触发：题解、写题解、出题解、给这道题写解析、写个 solution、这段解法讲一下、洛谷/LeetCode/Codeforces/牛客 某题要一份讲解。产出固定为三段：数学化题意（≤3 行）→ 思路与正确性 → C++、C、Python 三份零注释代码（顺序固定，左程云风格）。不用于：只要一份代码不要讲解、调试或修改已有代码、讲某个算法概念本身（如并查集是什么）。"
+description: "写算法题的中文题解（editorial）。触发：题解、写题解、出题解、给这道题写解析、写个 solution、这段解法讲一下、洛谷/LeetCode/Codeforces/牛客 某题要一份讲解。产出固定为三段：数学化题意（≤3 行）→ 思路与正确性 → C++、C、Python 三份不带注释的代码（顺序固定，左程云风格）。需要时可直接导出 Word（一份 docx + 由它转的 pdf）。不用于：只要一份代码不要讲解、调试或修改已有代码、讲某个算法概念本身（如并查集是什么）。"
 license: 自用，可自由修改
 ---
 
@@ -8,7 +8,7 @@ license: 自用，可自由修改
 
 ## 定位
 
-把一道算法题压成三块：**数学化的题意**、**可验证的思路**、**三段零注释代码（C++ → C → Python）**。
+把一道算法题压成三块：**数学化的题意**、**可验证的思路**、**三份代码（C++ → C → Python，不带注释）**。
 
 不写题目背景故事，不贴样例，不做教学式铺垫。读者是已经会这门语言、只想看解法的人。
 
@@ -25,10 +25,13 @@ license: 自用，可自由修改
 
 1. **语言顺序固定**：C++ → C → Python。小标题用 `### C++`、`### C`、`### Python`，不调换、不遗漏。
 2. **代码零注释**：`//`、`/* */`、`#` 一律不出现，也不写 `TODO`、不做分隔线。代码自己说话。
+   **注意**：这是写作约束，不是卖点——不要在标题、副标题、正文里写"零注释""无注释""三段式规范"之类的字样。
 3. **不复述题目**：全文不出现"题目描述""输入格式""输出格式""样例""示例"；题意段 ≤ 3 行，只用符号和约束表达。
 4. **思路必须给理由**：每个关键决策后面跟一句"为什么"，正确性用不变量、归纳、反证或交换论证之一说清楚。
 5. **复杂度写全**：时间、空间各一条，形如 `O(n log n)`；不写"大概""左右""很快"。
 6. **代码贴左程云风格**：短变量名、全局静态数组、手写队列/堆、`while` 双指针、三元压行、IO 模板固定。细则见 `references/style-rules.md`。
+7. **交付形态**：默认只交付 **1 个 .docx**（多题合订成一份）+ **1 个由它导出的 .pdf**。不把"每题一个 .md"当成交付物；中间 md 放 `_src/` 或临时目录。
+8. **公式必须是 Word 原生公式**：生成后 `document.xml` 里不得残留 `\text`、`\begin`、`\frac` 等 LaTeX 记号，也不得出现原始 `$...$`。细则见 `references/export-docx.md`。
 
 ## 输出骨架
 
@@ -89,8 +92,19 @@ license: 自用，可自由修改
 1. **抽符号**：把题目压成 2~5 个变量 + 约束（`n ≤ 2e5`、`a_i ∈ [-1e4, 1e4]`）。抽不出来说明还没读懂题。
 2. **定算法**：先写不变量或状态转移式子，再选数据结构；选型时优先"数组能做的"。
 3. **写代码**：先写 C++ 并确认逻辑闭环，再把同一算法移植成 C（注意 `bool`、`//`、变长数组），最后用 Python 重写为迭代式（不要直译 Java 的类结构）。
-4. **自检**：`python scripts/lint_editorial.py 题解.md` 查格式，`python scripts/verify_triple.py 题解.md --input 测试输入` 查三段代码是否真等价，然后逐条过下面的清单。
-5. **落盘**：默认文件名 `题解-<题目名>.md`，与题目文件同目录；用户指定路径时从其指定。
+4. **自检代码**：`python scripts/lint_editorial.py 题解.md` 查格式，`python scripts/verify_triple.py 题解.md --input 测试输入` 查三段代码是否真等价。
+5. **成文（按需）**：用户要 Word/PDF 时，md 源写到 `_src/` 或临时目录，然后用 `node scripts/md2docx.js 输出.docx _src/*.md --title "标题"` 合成**一份** docx（多题合订，不拆分）。
+6. **导出与验收**：`scripts/docx2pdf.ps1` 从 docx 导出 pdf；`python scripts/check_docx.py 输出.docx` 查公式是否残留 LaTeX、是否漏出"零注释"字样；最后把 pdf 渲成图逐页看一眼真实排版。
+
+## 交付形态
+
+| 场景 | 交付物 |
+|---|---|
+| 只讲算法 | 一份 md（`题解-<题目名>.md`） |
+| 要 Word | **一份** .docx（多题合订） + 由它导出的 .pdf |
+| 明确要逐题文件 | 才拆成多个 docx |
+
+中间 md 不是交付物：放 `_src/`、临时目录或直接不落盘。
 
 ## 自检清单
 
@@ -106,6 +120,10 @@ license: 自用，可自由修改
 - [ ] C 代码能单独编译（`gcc -std=c11 -O2`），没有混入 C++ 语法
 - [ ] Python 无爆栈风险，或已 `sys.setrecursionlimit`
 - [ ] 变量名是短名，没有题目原词
+- [ ] 正文、标题、副标题里没有"零注释/无注释/三段式规范"这类自我标榜字样
+- [ ] 交付物只有一份 docx + 一份 pdf，没有散落的每题 md
+- [ ] docx 里公式是 Word 原生公式：`check_docx.py` 报告 `oMath > 0` 且 LaTeX 残留为 0
+- [ ] 已把 pdf 渲染成图，至少看过含公式的那几页
 
 ## 参考文件
 
@@ -118,12 +136,16 @@ license: 自用，可自由修改
 | `references/style-c.md` | C 模板、与 C++ 的语法隔离、`%lld` 与 `bool` |
 | `references/style-python.md` | Python 模板、快读、递归、负数整除、大顶堆 |
 | `references/pitfalls.md` | 9 条常见退化及修法 |
+| `references/export-docx.md` | md→docx→pdf 流水线、公式转换的两个坑、验收项 |
 | `examples/example-sliding-window-max.md` | 完整样例：单调队列求滑动窗口最大值 |
 | `scripts/lint_editorial.py` | 结构顺序、注释、题意长度检查 |
 | `scripts/verify_triple.py` | 抽三段代码，编译并同输入运行，逐字节比对输出 |
+| `scripts/md2docx.js` | 多份 md 合成一份 docx，公式转 Word 原生公式 |
+| `scripts/docx2pdf.ps1` | 用 Word/WPS COM 把 docx 导出 pdf |
+| `scripts/check_docx.py` | 查 LaTeX 残留、oMath 数量、"零注释"字样、页数 |
 
 ## 与其它技能的边界
 
-- 题解默认产出 Markdown。要导出 Word/PDF 交给 `docx-editor-cn`。
+- 本技能自带 docx/pdf 导出（`md2docx.js` + `docx2pdf.ps1`），一般不需要再走 `docx-editor-cn`；只有在要做封面、目录、页眉页脚、图片排版时才交给它。
 - 要画流程图、状态转移图交给 `diagram-generator`。
 - 本技能只负责"把解法讲清楚并给出三份可编译代码"，不负责判题或造数据。
